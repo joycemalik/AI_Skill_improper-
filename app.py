@@ -68,9 +68,11 @@ def generate_roadmap(student_id):
     Student Info:
     {personality_info}
 
-    Generate a dynamic roadmap focusing on skills for the next week, month, and year. Return the result in plain text format, 
-    also provide the reason how it is going to help the student.
+    Generate a structured dynamic roadmap focusing on skills for the next week, month, and year. Return the result in plain text format, 
+    also provide the reason how it is going to help the student. also keep in mind the industry demands and career growth.
     Give a very persoanllized answer, backed with high research and authoritive tone. all under 750 words.
+    
+    
     """
 
     messages = [{"role": "user", "content": prompt}]
