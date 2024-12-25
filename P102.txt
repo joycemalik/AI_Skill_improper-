@@ -1,0 +1,3 @@
+Name: gpt
+Course: CSE
+Interests: Rockets, game development, app development 

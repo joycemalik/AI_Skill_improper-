@@ -1,8 +1,8 @@
-from flask import Flask, request, jsonify, render_template
+from flask import Flask, request, render_template, redirect, url_for
 from dotenv import load_dotenv
 import os
 from huggingface_hub import InferenceClient
-# import Flask, request, jsonify, render_template
+import time
 
 app = Flask(__name__)
 
@@ -11,72 +11,77 @@ load_dotenv()
 api_key = os.getenv('API_KEY')
 client = InferenceClient(api_key=api_key)
 
-# Mock database for student information
 students_db = {}
 
-# Home route
+# Generate unique student file name
+def get_next_student_id():
+    existing_files = [f for f in os.listdir() if f.startswith('P') and f.endswith('.txt')]
+    if not existing_files:
+        return 'P101'
+    numbers = [int(f[1:-4]) for f in existing_files]
+    return f'P{max(numbers) + 1}'
+
 @app.route('/')
 def home():
     return render_template('index.html')
 
-# Submit route
 @app.route('/submit', methods=['POST'])
 def submit():
-    data = request.json
-    student_id = data['student_id']
+    data = request.form
+    student_id = get_next_student_id()
     students_db[student_id] = {
         'name': data['name'],
         'course': data['course'],
-        'interests': data['interests']
+        'interests': data['interests'].split(',')
     }
     
-    response = generate_roadmap(student_id)
-    return jsonify(response)
+    with open(f"{student_id}.txt", "w") as file:
+        file.write(f"Name: {data['name']}\n")
+        file.write(f"Course: {data['course']}\n")
+        file.write(f"Interests: {data['interests']}\n")
+    
+    return redirect(url_for('loading', student_id=student_id))
 
-# Results route
+@app.route('/loading/<student_id>')
+def loading(student_id):
+    time.sleep(5)
+    generate_roadmap(student_id)
+    return redirect(url_for('roadmap', student_id=student_id))
+
 @app.route('/roadmap/<student_id>')
 def roadmap(student_id):
     roadmap_data = students_db.get(student_id, {}).get('roadmap', 'No roadmap available')
     return render_template('roadmap.html', roadmap=roadmap_data)
 
-# Generate AI-powered career roadmap
 def generate_roadmap(student_id):
-    with open(f"{student_id}.txt", "r") as file:
+    file_path = f"{student_id}.txt"
+    if not os.path.exists(file_path):
+        students_db[student_id]['roadmap'] = "No personality file found."
+        return
+    
+    with open(file_path, "r") as file:
         personality_info = file.read()
     
     student_data = students_db[student_id]
     prompt = f"""
-    Student Information:
-    Name: {student_data['name']}
-    Course: {student_data['course']}
-    Interests: {', '.join(student_data['interests'])}
-    
-    Personality Info:
+    Student Info:
     {personality_info}
-    
-    Generate a structured, dynamic learning roadmap for this student. Suggest skills to learn in the next year, upcoming months, and weeks. Include reasons for each suggestion, along with evidence of demand and industry trends.
+
+    Generate a dynamic roadmap focusing on skills for the next week, month, and year.
     """
 
-    messages = [
-        {"role": "user", "content": prompt}
-    ]
+    messages = [{"role": "user", "content": prompt}]
     
     stream = client.chat.completions.create(
-        model="mistralai/Mistral-Nemo-Instruct-2407", 
-        messages=messages, 
+        model="mistralai/Mistral-Nemo-Instruct-2407",
+        messages=messages,
         max_tokens=500,
         stream=True
     )
 
-    roadmap = ""
-    for chunk in stream:
-        roadmap += chunk.choices[0].delta.content
+    roadmap = "".join([chunk.choices[0].delta.content for chunk in stream])
     
     students_db[student_id]['roadmap'] = roadmap
-    return {
-        'student_id': student_id,
-        'roadmap': roadmap
-    }
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(debug=True, use_reloader=False)

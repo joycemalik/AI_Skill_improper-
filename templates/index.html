@@ -3,25 +3,24 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>AI Student Roadmap</title>
+    <title>Student Roadmap Generator</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Welcome to AI Roadmap Generator</h1>
-        <form id="studentForm">
+        <h1>Generate Your AI Roadmap</h1>
+        <form action="/submit" method="post">
             <label for="name">Name:</label>
-            <input type="text" id="name" required><br>
-            
+            <input type="text" name="name" required>
+
             <label for="course">Course:</label>
-            <input type="text" id="course" required><br>
-            
-            <label for="interests">Interests (comma separated):</label>
-            <input type="text" id="interests" required><br>
-            
+            <input type="text" name="course" required>
+
+            <label for="interests">Interests (comma-separated):</label>
+            <input type="text" name="interests" required>
+
             <button type="submit">Generate Roadmap</button>
         </form>
     </div>
-    <script src="/static/script.js"></script>
 </body>
 </html>
