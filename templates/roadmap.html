@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Student Roadmap</title>
+    <link rel="stylesheet" href="/static/style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Your Personalized Learning Roadmap</h1>
+        
+        <div class="section">
+            <h2>📅 Next Week</h2>
+            <p>{{ roadmap.split('Next Week:')[1].split('Next Month:')[0] }}</p>
+        </div>
+
+        <div class="section">
+            <h2>📅 Next Month</h2>
+            <p>{{ roadmap.split('Next Month:')[1].split('Next Year:')[0] }}</p>
+        </div>
+
+        <div class="section">
+            <h2>📅 Next Year</h2>
+            <p>{{ roadmap.split('Next Year:')[1] }}</p>
+        </div>
+
+        <div class="section">
+            <h2>📈 Why These Skills?</h2>
+            <p>{{ roadmap.split('Reasons:')[1] if 'Reasons:' in roadmap else 'Reasons will be dynamically generated based on AI insights.' }}</p>
+        </div>
+
+        <div class="footer">
+            <a href="/">🔙 Back to Home</a>
+        </div>
+    </div>
+</body>
+</html>
