@@ -3,14 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Roadmap</title>
+    <title>Your Personalized Learning Roadmap</title>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
     <div class="container">
-        <h1>Your Roadmap</h1>
-        <p>{{ roadmap }}</p>
-        <a href="/">Back to Home</a>
+        <h1>Your Personalized Learning Roadmap</h1>
+        <div class="roadmap-content">
+            <pre>{{ roadmap | safe }}</pre>
+        </div>
+        <a href="/" class="back-btn">🔙 Back to Home</a>
     </div>
 </body>
 </html>

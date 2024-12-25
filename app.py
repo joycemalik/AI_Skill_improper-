@@ -51,8 +51,9 @@ def loading(student_id):
 @app.route('/roadmap/<student_id>')
 def roadmap(student_id):
     roadmap_data = students_db.get(student_id, {}).get('roadmap', 'No roadmap available')
-    return render_template('roadmap.html', roadmap=roadmap_data)
+    return render_template('roadmap.html', roadmap=roadmap_data.replace('\n', '<br>'))
 
+# Generate AI-powered career roadmap
 def generate_roadmap(student_id):
     file_path = f"{student_id}.txt"
     if not os.path.exists(file_path):
@@ -67,7 +68,9 @@ def generate_roadmap(student_id):
     Student Info:
     {personality_info}
 
-    Generate a dynamic roadmap focusing on skills for the next week, month, and year.
+    Generate a dynamic roadmap focusing on skills for the next week, month, and year. Return the result in plain text format, 
+    also provide the reason how it is going to help the student.
+    Give a very persoanllized answer, backed with high research and authoritive tone. all under 750 words.
     """
 
     messages = [{"role": "user", "content": prompt}]
@@ -75,12 +78,11 @@ def generate_roadmap(student_id):
     stream = client.chat.completions.create(
         model="mistralai/Mistral-Nemo-Instruct-2407",
         messages=messages,
-        max_tokens=500,
+        max_tokens=750,
         stream=True
     )
 
     roadmap = "".join([chunk.choices[0].delta.content for chunk in stream])
-    
     students_db[student_id]['roadmap'] = roadmap
 
 if __name__ == "__main__":

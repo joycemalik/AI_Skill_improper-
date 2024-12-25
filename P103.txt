@@ -1,0 +1,3 @@
+Name: Newton
+Course: Mathematics
+Interests: Calculus, Web Development, Cybersecurity, Data Science
